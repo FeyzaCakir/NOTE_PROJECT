@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PERSONAL AGENDA</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #736e0eff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Üst bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background-color: #614908d0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .left-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .center-title {
+      flex: 1;
+      text-align: center;
+      font-size: 40px;
+      font-weight: bold;
+      color: #333;
+      pointer-events: none; /* tıklanmasın */
+    }
+
+    .right-button {
+      display: flex;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      background-color: #4a90e2;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    .add-button {
+      font-size: 22px;
+      padding: 6px 14px;
+      border-radius: 50%;
+    }
+
+    h1.page-title {
+      text-align: center;
+      margin-top: 100px; /* üst bar kapatmasın */
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    li {
+      background-color: #fff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ÜST MENÜ -->
+  <div class="top-bar">
+    <div class="left-buttons">
+      <form action="{{ url_for('profil')}}" method="GET">
+        <button type="submit">PROFIL</button>
+      </form>
+    </div>
+
+    <div class="center-title">
+      PERSONAL AGENDA
+    </div>
+
+    <div class="right-button">
+      <form action="{{ url_for('add')}}" method="GET">
+        <button type="submit" class="add-button">+</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SAYFA BAŞLIĞI -->
+  <h1 class="page-title">NOTLAR</h1>
+
+<ul>
+  {% for note in notes %}
+    <li>
+      {{ loop.index }} - <strong>{{ note["title"] }}</strong> {{ note["content"] }} 
+      <span style="color: gray; font-size: 0.9em;"> ({{ note["date"] | datetimeformat }})</span>
+
+
+      <form action="{{ url_for('toggle_done', note_id=note['id']) }}" method="POST" style="display:inline;">
+        <input type="checkbox" name="done" onchange="this.form.submit()" {% if note['done'] %}checked{% endif %}>
+        <strong style="{% if note['done'] %}text-decoration: line-through; color: red;{% endif %}">
+          {{ note["title"] }}
+        </strong>
+      </form>
+
+      
+
+      <div class="note-actions">
+        <form action="{{ url_for('delete', note_id=note['id']) }}" method="POST"> 
+          <button type="submit">DEL</button>
+        </form>
+
+
+        <form action="{{ url_for('update', note_id=note['id']) }}" method="GET">
+          <button type="submit">UPDATE</button>
+        </form>
+      </div>
+    </li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
